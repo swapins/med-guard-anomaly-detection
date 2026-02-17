@@ -35,7 +35,7 @@ Design constraints and target hardware
 
 Design targets for the baseline implementation:
 
-- Memory: minimal footprint (Designed for minimal runtime footprint suitable for SBC-class devices.).
+- Memory: designed for minimal runtime footprint suitable for SBC-class devices.
 - Latency: designed for low per-sample processing overhead suitable for SBC-class CPUs.
 - No GPU or heavy ML frameworks required.
 - Offline operation and deterministic behavior.
@@ -56,6 +56,8 @@ Implementation details
 - Supporting modules: `simulators/` (synthetic vitals), `benchmarks/` (latency tests), `tests/` (unit tests).
 
 During initial window warm-up (n < window_size), anomaly detection is deferred.
+The baseline implementation prioritizes clarity and determinism over algorithmic optimization.
+
 
 Example usage
 -------------
