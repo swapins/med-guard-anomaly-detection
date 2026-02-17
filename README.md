@@ -34,7 +34,7 @@ Design constraints and target hardware
 Design targets for the baseline implementation:
 
 - Memory: minimal footprint (target < 5 MB for Python runtime + dependencies).
-- Latency: per-sample processing below 10 ms on SBC-class CPUs.
+- Latency: designed for low per-sample processing overhead suitable for SBC-class CPUs.
 - No GPU or heavy ML frameworks required.
 - Offline operation and deterministic behavior.
 
