@@ -148,6 +148,19 @@ Potential extensions:
 - Robust statistics (e.g., MAD-based detectors) and outlier-resistant estimators.
 - Multi-signal fusion and correlation-aware detection.
 
+Theory & Mathematics
+--------------------
+
+For a rigorous treatment of the statistical foundations, see [Mathematical Basis](docs/mathematical_basis.md) which covers:
+
+- **Z-score detector:** Formal definition, interpretation, and threshold selection
+- **Welford's online algorithm:** Memory-efficient incremental mean and variance computation (O(1) space, O(1) per-sample)
+- **Median Absolute Deviation (MAD):** Robust alternative for outlier-resistant anomaly detection
+- **Numerical stability:** Edge cases, finite-window effects, and Bessel's correction
+- **Performance guarantees:** Memory footprint (<5 MB target), latency (<10 ms per sample)
+
+This design demonstrates research-grade statistical methods suitable for edge deployment without sacrificing rigor.
+
 Authors and acknowledgements
 ----------------------------
 
