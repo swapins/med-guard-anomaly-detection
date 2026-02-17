@@ -44,19 +44,50 @@ Implementation details
 ----------------------
 
 - Language: Python 3.9+
-- Dependencies: NumPy (for efficient numeric ops)
-- Module: a single inference component (`MedGuardInference`) exposes `analyze()` which accepts a scalar observation and returns (is_anomaly: bool, z_score: float).
+- Dependencies: NumPy, PyQt5 (for UI)
+- Core package: `medguard/` implements multi-vital anomaly detection with pluggable detectors (Z-score, MAD).
+- Architecture:
+  - `medguard.config` — signal configuration (window size, threshold, detector type).
+  - `medguard.inference` — `MultiVitalInference` orchestrates analysis across 5 vital signals (HR, SpO2, RR, BP, Temp).
+  - `medguard.detectors` — Z-score and Median Absolute Deviation (MAD) implementations.
+  - `medguard.ui.dashboard` — PyQt5-based real-time dashboard for visualization.
+- Supporting modules: `simulators/` (synthetic vitals), `benchmarks/` (latency tests), `tests/` (unit tests).
 
 Example usage
 -------------
 
-```python
-from medguard import MedGuardInference
+**Interactive UI (Dashboard):**
 
-engine = MedGuardInference(window_size=15, threshold=2.0)
-is_anomaly, z = engine.analyze(heart_rate=85)
-if is_anomaly:
-    print('Anomaly detected', z)
+```bash
+python main.py
+```
+
+**Programmatic API:**
+
+```python
+from medguard.config import MedGuardConfig, SignalConfig
+from medguard.inference import MultiVitalInference
+
+config = MedGuardConfig(
+    heart_rate=SignalConfig(window_size=15, threshold=2.0),
+    spo2=SignalConfig(window_size=15, threshold=2.0),
+    respiratory_rate=SignalConfig(window_size=15, threshold=2.0),
+    systolic_bp=SignalConfig(window_size=15, threshold=2.0),
+    temperature=SignalConfig(window_size=15, threshold=2.0),
+)
+
+engine = MultiVitalInference(config)
+results = engine.analyze({
+    'heart_rate': 85,
+    'spo2': 97,
+    'respiratory_rate': 16,
+    'systolic_bp': 120,
+    'temperature': 36.8,
+})
+
+for vital, (is_anomaly, score) in results.items():
+    if is_anomaly:
+        print(f'Anomaly detected in {vital}: {score:.3f}')
 ```
 
 Installation and running
@@ -64,7 +95,7 @@ Installation and running
 
 Prerequisites: Python 3.9+, virtual environment recommended, pip.
 
-Setup (example):
+**Setup (example):**
 
 ```bash
 git clone <repository-url>
@@ -72,7 +103,24 @@ cd med-guard-anomaly-detection
 python -m venv venv
 venv\Scripts\activate    # Windows
 pip install -r requirements.txt
+```
+
+**Run the interactive dashboard:**
+
+```bash
 python main.py
+```
+
+**Run unit tests:**
+
+```bash
+pytest tests/
+```
+
+**Run benchmark (latency profiling):**
+
+```bash
+python benchmarks/benchmark_latency.py
 ```
 
 Evaluation and limitations
