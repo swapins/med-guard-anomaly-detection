@@ -111,10 +111,8 @@ License & Patent Notice
 - **Patent notice & usage limitation:** Patent Notice
 Certain architectural concepts referenced in this repository are related to intellectual property associated with the PeachBot Med AI platform, including issued patents and/or pending patent applications.
 
-This repository itself is released under the MIT License. The MIT License applies solely to the code contained herein and does not grant rights to practice or commercialize any separate patented systems beyond the scope of this specific implementation.
+This repository itself is released under the MIT License. The MIT License applies solely to the code contained herein and does not grant rights to practice or commercialize any separate patented systems beyond the scope of this specific implementation. For inquiries related to intellectual property beyond this repository’s open-source scope, please contact the project maintainer.
 
-For inquiries related to intellectual property beyond this repository’s open-source scope, please contact the project maintainer.
--------------
 
 
 
