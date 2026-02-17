@@ -20,6 +20,8 @@ System overview
 
 Signal Source → Sliding-window Buffer → Statistical Engine → Z-score Computation → Local Alert
 
+Per-sample computational complexity is O(n) for window size n in the baseline implementation.
+
 Core components
 
 - Signal Input Layer — accepts sequential numeric observations (synthetic or recorded signals).
@@ -33,7 +35,7 @@ Design constraints and target hardware
 
 Design targets for the baseline implementation:
 
-- Memory: minimal footprint (target < 5 MB for Python runtime + dependencies).
+- Memory: minimal footprint (Designed for minimal runtime footprint suitable for SBC-class devices.).
 - Latency: designed for low per-sample processing overhead suitable for SBC-class CPUs.
 - No GPU or heavy ML frameworks required.
 - Offline operation and deterministic behavior.
@@ -52,6 +54,8 @@ Implementation details
   - `medguard.detectors` — Z-score and Median Absolute Deviation (MAD) implementations.
   - `medguard.ui.dashboard` — PyQt5-based real-time dashboard for visualization.
 - Supporting modules: `simulators/` (synthetic vitals), `benchmarks/` (latency tests), `tests/` (unit tests).
+
+During initial window warm-up (n < window_size), anomaly detection is deferred.
 
 Example usage
 -------------
