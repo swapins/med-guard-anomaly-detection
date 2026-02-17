@@ -104,14 +104,14 @@ License
 
 MIT License
 
-License & Patent Notice
-----------------------
+Patent Notice
+--------------
 
-- **License:** This repository is provided under the MIT License. See the `LICENSE` file for full terms and conditions.
-- **Patent notice & usage limitation:** Patent Notice
-Certain architectural concepts referenced in this repository are related to intellectual property associated with the PeachBot Med AI platform, including issued patents and/or pending patent applications.
+Certain architectural concepts referenced in this repository are related to intellectual property associated with the PeachBot Med AI platform, including issued patents and/or published or pending patent applications.
 
-This repository itself is released under the MIT License. The MIT License applies solely to the code contained herein and does not grant rights to practice or commercialize any separate patented systems beyond the scope of this specific implementation. For inquiries related to intellectual property beyond this repository’s open-source scope, please contact the project maintainer.
+This repository is released under the MIT License. The MIT License applies solely to the code contained herein and does not grant rights to practice or commercialize any separate patented systems beyond the scope of this specific implementation.
+
+For inquiries related to intellectual property beyond this repository’s open-source scope, please contact the project maintainer.
 
 
 
