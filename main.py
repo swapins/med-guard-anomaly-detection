@@ -18,22 +18,22 @@ from medguard.ui.dashboard import VitalDashboard
 def simulated_vitals() -> Dict[str, float]:
     """
     Generates synthetic physiological signals for research simulation.
+    Uses realistic ranges for each vital sign.
     Occasional anomaly spikes are introduced probabilistically.
     """
 
     def spike(prob, normal_range, anomaly_range):
+        """Generate normal or anomalous value with given probability."""
         if random.random() < prob:
-            return random.randint(*anomaly_range)
-        return random.randint(*normal_range)
+            return random.uniform(*anomaly_range)
+        return random.uniform(*normal_range)
 
     return {
-        "heart_rate": spike(0.05, (70, 85), (130, 150)),
-        "spo2": spike(0.05, (95, 99), (85, 90)),
-        "respiratory_rate": spike(0.05, (14, 18), (25, 35)),
-        "systolic_bp": spike(0.05, (110, 125), (160, 180)),
-        "temperature": round(
-            spike(0.05, (36, 37), (39, 40)) + random.random(), 1
-        ),
+        "heart_rate": spike(0.05, (60, 100), (120, 160)),           # Normal: 60-100 bpm
+        "spo2": spike(0.05, (95, 99), (85, 92)),                    # Normal: 95-99 %
+        "respiratory_rate": spike(0.05, (12, 20), (28, 40)),        # Normal: 12-20 /min
+        "systolic_bp": spike(0.05, (110, 130), (160, 200)),         # Normal: 110-130 mmHg
+        "temperature": round(spike(0.05, (36.5, 37.5), (38.5, 40.5)), 1),  # Normal: 36.5-37.5 °C
     }
 
 
