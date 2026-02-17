@@ -1,182 +1,107 @@
-# Med-Guard: Edge AI Anomaly Detection Engine
+# Med-Guard: Lightweight Statistical Anomaly Detection for Edge Research
 
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen.svg)](#)
+Abstract
+-------
 
-**Decentralized Clinical Intelligence for Remote Patient Monitoring**
+Med-Guard is a research prototype implementing a computationally lightweight, statistically grounded anomaly detection pipeline for time-series monitoring on resource-constrained edge hardware. The project focuses on methods that prioritize interpretability, deterministic behavior, and low resource consumption over deep-learning complexity.
 
-An edge-first anomaly detection system designed to run on resource-constrained devices (Raspberry Pi, NVIDIA Jetson). Performs real-time clinical inference locally, ensuring patient safety in zero-connectivity environments while protecting data privacy.
+Motivation
+----------
 
----
+Edge and embedded environments impose constraints that affect algorithm design: limited memory, reduced CPU performance, energy budgets, and intermittent connectivity. This repository investigates whether sliding-window statistical techniques (rolling mean/std and Z-score rules) provide an effective baseline for anomaly detection in such settings.
 
-## 🚀 Key Innovations
+Scope and disclaimer
+--------------------
 
-- **Edge-First Architecture:** Reduces latency ~85% by localizing processing and minimizes cloud transmission for enhanced privacy
-- **Explainable AI (XAI):** Sliding-window Z-Score algorithm provides clinically verifiable detection of anomalies (Tachycardia, SpO2 drops)
-- **Low-Power Optimized:** Engineered for ARM-based architectures and Single Board Computers with minimal resource overhead
-- **Patent-Aligned:** Functional prototype for *"System and Method for AI-Driven Remote Patient Monitoring in Resource-Constrained Environments"*
+This codebase is a research tool and experimental prototype. It is not validated for clinical use and must not be used for patient care or medical decision-making.
 
----
+System overview
+---------------
 
-## 🏗 System Architecture
+Signal Source → Sliding-window Buffer → Statistical Engine → Z-score Computation → Local Alert
 
+Core components
+
+- Signal Input Layer — accepts sequential numeric observations (synthetic or recorded signals).
+- Sliding-window Buffer — fixed-size buffer of recent samples.
+- Statistical Engine — computes rolling mean (μ) and standard deviation (σ) for the active window.
+- Z-score Detector — standardizes incoming samples: z = (x − μ) / σ and flags samples where |z| exceeds a configured threshold.
+- Local Alerting — interface for raising local events; no cloud dependency required by the baseline.
+
+Design constraints and target hardware
+-------------------------------------
+
+Design targets for the baseline implementation:
+
+- Memory: minimal footprint (target < 5 MB for Python runtime + dependencies).
+- Latency: per-sample processing below 10 ms on SBC-class CPUs.
+- No GPU or heavy ML frameworks required.
+- Offline operation and deterministic behavior.
+
+Target evaluation platforms include Raspberry Pi and other ARM-based SBCs.
+
+Implementation details
+----------------------
+
+- Language: Python 3.9+
+- Dependencies: NumPy (for efficient numeric ops)
+- Module: a single inference component (`MedGuardInference`) exposes `analyze()` which accepts a scalar observation and returns (is_anomaly: bool, z_score: float).
+
+Example usage
+-------------
+
+```python
+from medguard import MedGuardInference
+
+engine = MedGuardInference(window_size=15, threshold=2.0)
+is_anomaly, z = engine.analyze(heart_rate=85)
+if is_anomaly:
+    print('Anomaly detected', z)
 ```
-Vitals Simulator
-       ↓
-Statistical Inference Engine (Sliding Window)
-       ↓
-Z-Score Threshold Logic
-       ↓
-Local Alert Trigger
-```
 
-**Pipeline Components:**
+Installation and running
+------------------------
 
-1. **Vitals Simulator** - Generates high-fidelity synthetic patient data (Heart Rate, SpO2)
-2. **Statistical Engine** - Processes time-series data with 15-reading sliding window
-3. **Anomaly Detection** - Evaluates Z-Score (threshold: |z| > 2.0 for OOD events)
-4. **Alerting Layer** - Triggers local alerts independently of network connectivity
+Prerequisites: Python 3.9+, virtual environment recommended, pip.
 
----
-
-## 🛠 Tech Stack
-
-| Component | Technology |
-|-----------|-----------|
-| **Language** | Python 3.9+ |
-| **Mathematics** | NumPy (vectorized operations) |
-| **Deployment** | Docker, Linux Edge Nodes |
-| **Future** | MQTT / WebSockets for IoT integration |
-
----
-
-## 📥 Installation
-
-### Prerequisites
-- Python 3.9 or higher
-- pip or conda package manager
-- Virtual environment (recommended)
-
-### Setup Steps
+Setup (example):
 
 ```bash
-# Clone repository
-git clone https://github.com/swapins/med-guard-anomaly-detection.git
+git clone <repository-url>
 cd med-guard-anomaly-detection
-
-# Create virtual environment
 python -m venv venv
-source venv/Scripts/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
+venv\Scripts\activate    # Windows
 pip install -r requirements.txt
-```
-
-### Troubleshooting
-
-**Error: `ModuleNotFoundError: No module named 'numpy'`**
-```bash
-pip install --upgrade pip
-pip install numpy
-```
-
-**Error: `source: command not found` (Windows)**
-```bash
-# Use Windows command instead
-venv\Scripts\activate
-```
-
----
-
-## 💻 Usage
-
-### Running the Monitoring System
-
-```bash
 python main.py
 ```
 
-**Example Output:**
-```
-🚀 Med-Guard Edge System Active...
-Monitoring Vitals (Ctrl+C to stop)
+Evaluation and limitations
+--------------------------
 
-Reading: 72 BPM | Status: ✅ NORMAL | Z-Score: -0.45
-Reading: 75 BPM | Status: ✅ NORMAL | Z-Score: 0.12
-Reading: 142 BPM | Status: ⚠️ ANOMALY | Z-Score: 2.34
-```
+Current repository uses synthetic signals for controlled experiments. Known limitations:
 
----
+- No empirical benchmark vs learned anomaly detectors in this release.
+- No clinical dataset validation included.
+- Thresholds are heuristic; no adaptive thresholding implemented.
 
-## 🔌 API Reference
+Research directions
+-------------------
 
-### `MedGuardInference` Class
+Potential extensions:
 
-```python
-from src.inference import MedGuardInference
+- Quantitative benchmarking vs lightweight learned models (e.g., small autoencoders).
+- Adaptive threshold mechanisms and online calibration.
+- Robust statistics (e.g., MAD-based detectors) and outlier-resistant estimators.
+- Multi-signal fusion and correlation-aware detection.
 
-# Initialize engine with 15-reading window
-engine = MedGuardInference(window_size=15)
+Authors and acknowledgements
+----------------------------
 
-# Analyze incoming vital
-is_anomaly, z_score = engine.analyze(heart_rate=85)
+Author: Swapin Vidya
 
-if is_anomaly:
-    print(f"Alert: Anomalous reading detected (Z-Score: {z_score:.2f})")
-```
+License
+-------
 
-**Parameters:**
-- `window_size` (int): Number of historical readings to maintain. Default: 15
+MIT License
 
-**Returns:**
-- `is_anomaly` (bool): True if reading exceeds ±2.0 standard deviations from mean
-- `z_score` (float): Standardized deviation score; |z| > 2.0 triggers alert
-
-**Methods:**
-- `analyze(heart_rate)` - Process incoming vital and return anomaly status
-
----
-
-## 📊 Performance Metrics
-
-| Metric | Value |
-|--------|-------|
-| Detection Latency | < 10ms per reading |
-| Memory Footprint | < 5MB (Raspberry Pi 4) |
-| CPU Usage | < 2% (continuous) |
-| Minimum Window | 5 readings for statistical significance |
-| Alert Threshold | Z-Score > 2.0 (98.7% confidence) |
-
----
-
-## 🔬 Research Context
-
-Component of broader research in **Edge-Based Execution of GNNs in Clinical Oncology** and decentralized medical IoT systems.
-
-- **Developer:** Swapin Vidya
-- **Status:** Graduate Student (Singapore 🇸🇬)
-- **Focus:** Systems Architecture & HealthTech
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/improvement`)
-3. Commit changes with descriptive messages (`git commit -am 'Add feature'`)
-4. Push to branch (`git push origin feature/improvement`)
-5. Submit a Pull Request with problem description and solution
-
----
-
-## 📝 License
-
-MIT License - See LICENSE file for details
-
----
-
-*"The future of healthcare isn't in the cloud; it's at the bedside."*
 
